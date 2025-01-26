@@ -1,0 +1,609 @@
+
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+
+/**
+ *
+ * @author ASUS
+ */
+public class FormKRS extends javax.swing.JFrame {
+     
+     private static Connection connection;
+
+    public static Connection getConnection() {
+        if (connection == null) {
+            try {
+                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/db_uaspbo_krs", "root", "");
+            } catch (SQLException e) {
+                throw new RuntimeException("Database connection failed: " + e.getMessage());
+            }
+        }
+        return connection;
+    }
+
+    /**
+     * Creates new form FormMahasiswa
+     */
+    private DefaultTableModel tableModel;
+    private db_helper dbHelper;
+    
+    public FormKRS() {
+       String[] columnNames = {"NPM", "Nama Mahasiswa", "Semester", "Mata Kuliah", "Tahun Akademik"};
+    initComponents();
+    setLocationRelativeTo(this);
+    
+    connection = getConnection();
+    
+    tableModel = new DefaultTableModel(columnNames, 0);
+    jTableKRS.setModel(tableModel);
+    dbHelper = new db_helper(); // Inisialisasi db_helper
+    loadDataFromDatabase();
+    loadNPMToComboBox(); // Memuat NPM ke combobox
+    loadMataKuliahToComboBox(); // Memuat mata kuliah ke combobox
+
+    }
+    
+    private void loadMataKuliahToComboBox() {
+    try {
+        // Bersihkan item yang ada di jComboBoxMataKuliah
+        jComboBoxMataKuliah.removeAllItems();
+        jComboBoxMataKuliah.addItem("-- Pilih Mata Kuliah --");
+
+        // Query untuk mengambil nama mata kuliah dari tabel
+        String query = "SELECT nama_matakuliah FROM table_matakuliah";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+
+        // Tambahkan nama mata kuliah ke dalam jComboBoxMataKuliah
+        while (rs.next()) {
+            String namaMataKuliah = rs.getString("nama_matakuliah");
+            jComboBoxMataKuliah.addItem(namaMataKuliah);
+        }
+        rs.close();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat mata kuliah: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    
+    private void loadNPMToComboBox() {
+    try {
+        // Query untuk mengambil data NPM dari tabel mahasiswa
+        String query = "SELECT npm FROM mahasiswa";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery();
+
+        // Membersihkan item di jComboBoxNPM
+        jComboBoxNPM.removeAllItems();
+        jComboBoxNPM.addItem("-- Pilih NPM --");
+
+        // Menambahkan NPM ke dalam jComboBoxNPM
+        while (rs.next()) {
+            String npm = rs.getString("npm");
+            jComboBoxNPM.addItem(npm);
+        }
+        rs.close();
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat NPM: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    private void loadDataFromDatabase() {
+    try {
+        tableModel.setRowCount(0); // Hapus semua data di tabel
+        String query = "SELECT * FROM table_krs";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ResultSet rs = ps.executeQuery(query);
+
+        if (rs != null) {
+            while (rs.next()) {
+                int id = rs.getInt("id_krs");
+                String npm = rs.getString("npm");
+                String namamahasiswa = rs.getString("nama_mahasiswa");
+                String semester = rs.getString("semester");
+                String matakuliah = rs.getString("mata_kuliah");
+                String tahunakademik = rs.getString("tahun_akademik");
+            
+
+                Object[] row = {id, npm, namamahasiswa, semester, matakuliah, tahunakademik};
+                tableModel.addRow(row);
+            }
+            rs.close();
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Gagal memuat data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    /**
+     * Creates new form FormKRS
+     */
+    
+    
+    
+      private void clearForm() {
+        // Membersihkan form setelah data ditambahkan
+        jTextFieldNama.setText("");
+        jComboBoxNPM.setSelectedIndex(0);
+        jComboBoxSemester.setSelectedIndex(0);
+        jComboBoxMataKuliah.setSelectedIndex(0);
+        jTextFieldTahunAkademik.setText("");
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    
+
+
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jTextFieldNama = new javax.swing.JTextField();
+        jComboBoxSemester = new javax.swing.JComboBox<>();
+        jButtonTambah = new javax.swing.JButton();
+        jButtonEdit = new javax.swing.JButton();
+        jButtonHapus = new javax.swing.JButton();
+        jButtonCetak = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableKRS = new javax.swing.JTable();
+        jComboBoxMataKuliah = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
+        jTextFieldTahunAkademik = new javax.swing.JTextField();
+        jComboBoxNPM = new javax.swing.JComboBox<>();
+        jButtonExportPDF = new javax.swing.JButton();
+        btnKeluar = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(1080, 720));
+
+        jPanel1.setBackground(new java.awt.Color(153, 204, 255));
+        jPanel1.setPreferredSize(new java.awt.Dimension(1080, 720));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel1.setText("APLIKASI PENGELOLA KRS");
+
+        jLabel2.setText("Nama :");
+
+        jLabel3.setText("NPM :");
+
+        jLabel4.setText("Semester :");
+
+        jLabel5.setText("Mata Kuliah :");
+
+        jComboBoxSemester.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5 ", "Semester 6", "Semester 7", "Semester 8", "Semester 9", "Semester 10" }));
+
+        jButtonTambah.setText("Tambah");
+        jButtonTambah.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonTambahActionPerformed(evt);
+            }
+        });
+
+        jButtonEdit.setText("Edit");
+        jButtonEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonEditActionPerformed(evt);
+            }
+        });
+
+        jButtonHapus.setText("Hapus");
+        jButtonHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonHapusActionPerformed(evt);
+            }
+        });
+
+        jButtonCetak.setText("Cetak");
+        jButtonCetak.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonCetakActionPerformed(evt);
+            }
+        });
+
+        jTableKRS.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTableKRS);
+
+        jComboBoxMataKuliah.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PBO", "Visual 3", "Bahasa Arab", " " }));
+
+        jLabel6.setText("Tahun Akademik :");
+
+        jComboBoxNPM.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBoxNPM.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxNPMActionPerformed(evt);
+            }
+        });
+
+        jButtonExportPDF.setText("Kembali ke Menu");
+        jButtonExportPDF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonExportPDFActionPerformed(evt);
+            }
+        });
+
+        btnKeluar.setText("Keluar");
+        btnKeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnKeluarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 312, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(376, 376, 376))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(38, 38, 38)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnKeluar)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonExportPDF))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(47, 47, 47)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTextFieldNama)
+                            .addComponent(jComboBoxSemester, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jComboBoxMataKuliah, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jButtonTambah)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButtonEdit)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButtonHapus)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonCetak))
+                            .addComponent(jTextFieldTahunAkademik, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jComboBoxNPM, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(107, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(52, 52, 52)
+                .addComponent(jLabel1)
+                .addGap(54, 54, 54)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jComboBoxNPM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jTextFieldNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(9, 9, 9)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jComboBoxSemester, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(jComboBoxMataKuliah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(jTextFieldTahunAkademik, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButtonTambah)
+                            .addComponent(jButtonEdit)
+                            .addComponent(jButtonHapus)
+                            .addComponent(jButtonCetak)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButtonExportPDF)
+                    .addComponent(btnKeluar))
+                .addContainerGap(120, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonTambahActionPerformed
+        // TODO add your handling code here:
+        try {
+        // Ambil data dari form
+        String npm = (String) jComboBoxNPM.getSelectedItem();
+        String namamahasiswa = jTextFieldNama.getText().trim();
+        String semester = (String) jComboBoxSemester.getSelectedItem();
+        String matakuliah = (String) jComboBoxMataKuliah.getSelectedItem();
+        String tahunakademik = jTextFieldTahunAkademik.getText().trim();
+
+        // Validasi input
+        if (npm.isEmpty() || namamahasiswa.isEmpty() || semester.isEmpty() || matakuliah.isEmpty() || tahunakademik.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Semua field wajib diisi!", "Validasi Gagal", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Query untuk memasukkan data ke dalam tabel KRS
+        String query = "INSERT INTO table_krs (npm, nama_mahasiswa, semester, mata_kuliah, tahun_akademik) VALUES (?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, npm);
+            ps.setString(2, namamahasiswa);
+            ps.setString(3, semester);
+            ps.setString(4, matakuliah);
+            ps.setString(5, tahunakademik);
+
+            // Eksekusi query
+            ps.executeUpdate();
+
+            // Tampilkan pesan sukses
+            JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+
+            // Perbarui tabel dengan memuat ulang data dari database
+            loadDataFromDatabase();
+
+            // Bersihkan form
+            clearForm();
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Gagal menambahkan data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_jButtonTambahActionPerformed
+
+    private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEditActionPerformed
+        // TODO add your handling code here:
+        int selectedRow = jTableKRS.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih data yang ingin diedit!", "Edit Data", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+      
+
+        // Mengambil data dari form
+        String npm = (String) jComboBoxNPM.getSelectedItem();
+        String nama = jTextFieldNama.getText();
+        String semester = (String) jComboBoxSemester.getSelectedItem();
+        String mataKuliah = (String) jComboBoxMataKuliah.getSelectedItem();
+        String tahunAkademik = jTextFieldTahunAkademik.getText();
+
+        // Memperbarui data pada tabel
+        tableModel.setValueAt(npm, selectedRow, 0);
+        tableModel.setValueAt(nama, selectedRow, 1);
+        tableModel.setValueAt(semester, selectedRow, 2);
+        tableModel.setValueAt(mataKuliah, selectedRow, 3);
+        tableModel.setValueAt(tahunAkademik, selectedRow, 4);
+
+        // Membersihkan form setelah data diperbarui
+        clearForm();
+
+        JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+    
+    }//GEN-LAST:event_jButtonEditActionPerformed
+
+    private void jButtonHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonHapusActionPerformed
+        // TODO add your handling code here:
+         int selectedRow = jTableKRS.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih data yang ingin dihapus!", "Hapus Data", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Menghapus data dari tabel
+        tableModel.removeRow(selectedRow);
+        JOptionPane.showMessageDialog(this, "Data berhasil dihapus!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+    
+    }//GEN-LAST:event_jButtonHapusActionPerformed
+
+    private void jComboBoxNPMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxNPMActionPerformed
+        // TODO add your handling code here:
+        try {
+    String selectedNPM = (String) jComboBoxNPM.getSelectedItem();
+    if (selectedNPM != null && !selectedNPM.equals("-- Pilih NPM --")) {
+        // Query untuk mendapatkan nama mahasiswa berdasarkan NPM
+        String query = "SELECT nama_mahasiswa FROM mahasiswa WHERE npm = ?";
+        PreparedStatement ps = connection.prepareStatement(query);
+        ps.setString(1, selectedNPM);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            String nama = rs.getString("nama_mahasiswa");
+            jTextFieldNama.setText(nama);
+        } else {
+            jTextFieldNama.setText("");
+        }
+        rs.close();
+    } else {
+        jTextFieldNama.setText("");
+    }
+} catch (SQLException e) {
+    JOptionPane.showMessageDialog(this, "Gagal memuat nama mahasiswa: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+}
+
+    }//GEN-LAST:event_jComboBoxNPMActionPerformed
+
+    private void jButtonCetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCetakActionPerformed
+        // TODO add your handling code here:
+        try {
+        // Gunakan JFileChooser untuk memilih lokasi penyimpanan file
+        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+        fileChooser.setDialogTitle("Simpan File PDF");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PDF Documents", "pdf"));
+
+        int userSelection = fileChooser.showSaveDialog(this);
+
+        // Jika pengguna memilih lokasi
+        if (userSelection == javax.swing.JFileChooser.APPROVE_OPTION) {
+            java.io.File fileToSave = fileChooser.getSelectedFile();
+
+            // Tambahkan ekstensi .pdf jika pengguna tidak menambahkannya
+            String filePath = fileToSave.getAbsolutePath();
+            if (!filePath.endsWith(".pdf")) {
+                filePath += ".pdf";
+            }
+
+            // Buat dokumen PDF
+            com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+            com.itextpdf.text.pdf.PdfWriter.getInstance(document, new java.io.FileOutputStream(filePath));
+
+            document.open(); // Membuka dokumen
+
+            // Tambahkan judul
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.TIMES_ROMAN, 18, com.itextpdf.text.Font.BOLD);
+            document.add(new com.itextpdf.text.Paragraph("Data KRS Mahasiswa", titleFont));
+            document.add(new com.itextpdf.text.Paragraph(" ")); // Baris kosong
+
+            // Buat tabel PDF dengan jumlah kolom sesuai tabel di GUI
+            com.itextpdf.text.pdf.PdfPTable pdfTable = new com.itextpdf.text.pdf.PdfPTable(jTableKRS.getColumnCount());
+
+            // Tambahkan header kolom ke tabel PDF
+            for (int i = 0; i < jTableKRS.getColumnCount(); i++) {
+                pdfTable.addCell(new com.itextpdf.text.Phrase(jTableKRS.getColumnName(i)));
+            }
+
+            // Tambahkan baris data ke tabel PDF
+            for (int rows = 0; rows < jTableKRS.getRowCount(); rows++) {
+                for (int cols = 0; cols < jTableKRS.getColumnCount(); cols++) {
+                    pdfTable.addCell(new com.itextpdf.text.Phrase(jTableKRS.getValueAt(rows, cols).toString()));
+                }
+            }
+
+            // Tambahkan tabel ke dokumen
+            document.add(pdfTable);
+
+            // Tutup dokumen
+            document.close();
+
+            // Tampilkan pesan sukses
+            JOptionPane.showMessageDialog(this, "Data berhasil disimpan di: " + filePath, "Sukses", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // Jika pengguna membatalkan pemilihan
+            JOptionPane.showMessageDialog(this, "Penyimpanan dibatalkan.", "Informasi", JOptionPane.WARNING_MESSAGE);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Gagal mencetak data ke PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+
+    }//GEN-LAST:event_jButtonCetakActionPerformed
+
+    private void jButtonExportPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonExportPDFActionPerformed
+        // TODO add your handling code here:
+        new FormMenuUtama().setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jButtonExportPDFActionPerformed
+
+    private void btnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKeluarActionPerformed
+        // TODO add your handling code here:
+        System.exit(0);
+    }//GEN-LAST:event_btnKeluarActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(FormKRS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(FormKRS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(FormKRS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(FormKRS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new FormKRS().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnKeluar;
+    private javax.swing.JButton jButtonCetak;
+    private javax.swing.JButton jButtonEdit;
+    private javax.swing.JButton jButtonExportPDF;
+    private javax.swing.JButton jButtonHapus;
+    private javax.swing.JButton jButtonTambah;
+    private javax.swing.JComboBox<String> jComboBoxMataKuliah;
+    private javax.swing.JComboBox<String> jComboBoxNPM;
+    private javax.swing.JComboBox<String> jComboBoxSemester;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTableKRS;
+    private javax.swing.JTextField jTextFieldNama;
+    private javax.swing.JTextField jTextFieldTahunAkademik;
+    // End of variables declaration//GEN-END:variables
+}
